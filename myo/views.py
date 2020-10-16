@@ -1,7 +1,3 @@
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.http import HttpRequest
 from rest_framework.decorators import api_view
 from sklearn.neighbors import KNeighborsClassifier
 from rest_framework.response import Response
@@ -24,6 +20,8 @@ def myo(request):
   with connection.cursor() as cursor:
     cursor.execute("SELECT * FROM newlabel")
     train_label = cursor.fetchall()
+    train_label = np.array(train_label)
+    train_label = train_label.ravel()
     cursor.execute("SELECT * FROM newdata")
     train_data = cursor.fetchall()
 
