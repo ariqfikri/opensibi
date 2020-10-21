@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import serializers
 from django.db import connection
 import numpy as np
-
+from opensibi.middleware import jwtRequired
 
 class MyoSerializer(serializers.Serializer):
     hasil = serializers.CharField(max_length=200)
@@ -16,6 +16,7 @@ class Myo(object):
         
 
 @api_view()
+@jwtRequired
 def myo(request):
   with connection.cursor() as cursor:
     cursor.execute("SELECT * FROM newlabel")

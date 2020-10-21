@@ -8,6 +8,8 @@ from django.contrib.auth.hashers import check_password
 from opensibi.response import Response
 from opensibi import transformer
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime, timedelta
+
 
 class UserViewset(viewsets.ModelViewSet):
   queryset = Users.objects.all()
@@ -25,5 +27,5 @@ def auth(request):
             return Response.badRequest(message="Password atau email yang kamu masukkan salah!")
         user = transformer.singleTransform(user)
         jwt = JWTAuth()
-        user['token'] = jwt.encode({"id": user['id']})
+        user['token'] = jwt.encode({"id": user['id'], "exp": datetime.utcnow() + timedelta(seconds=30)})
         return Response.ok(values=user, message="Berhasil masuk!")

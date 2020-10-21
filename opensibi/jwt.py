@@ -1,5 +1,6 @@
 import environ
 import jwt
+from datetime import datetime, timedelta
 
 env = environ.Env()
 environ.Env.read_env()
@@ -10,7 +11,8 @@ class JWTAuth:
         self.secret = env('JWT_SECRET')
 
     def encode(self, payload):
+        print(payload)
         return jwt.encode(payload, self.secret, algorithm='HS256').decode("utf-8")
 
     def decode(self, token):
-        return jwt.decode(token, self.secret, algorithms=['HS256'])
+        return jwt.decode(token, self.secret,  algorithms=['HS256'])
