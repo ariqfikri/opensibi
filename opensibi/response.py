@@ -19,3 +19,8 @@ class Response:
     @staticmethod
     def badRequest(values=None, message=""):
         return Response().base(values=values, message=message, status=400)
+    
+    @staticmethod
+    def unauthorized(values=None, message=""):
+        return Response().base(values=values, message=message, status=401)
+    

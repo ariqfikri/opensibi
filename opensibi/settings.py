@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'myo',
     'user',
     'rest_framework',
+    'monitor',
 ]
 
 MIDDLEWARE = [

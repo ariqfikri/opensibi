@@ -1,6 +1,6 @@
 from functools import wraps
 from opensibi.jwt import JWTAuth
-from rest_framework.response import Response
+from opensibi.response import Response
 import jwt
 
 def jwtRequired(fn):
@@ -9,10 +9,13 @@ def jwtRequired(fn):
         try:
             decode(args[0].headers.get('Authorization'))
         except jwt.ExpiredSignatureError:
-            return Response(data="Token expired. Get new one")
+            return Response.unauthorized(message="Token Expired")
         except jwt.InvalidTokenError:
-            return Response(data="Invalid Token")    
+            return Response.unauthorized(message="unauthorized")
+        except Exception as e:
+            return Response.unauthorized(message="unauthorized")  
         return fn(*args, **kwargs)
+        
     return wrapper
 
 
