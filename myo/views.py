@@ -14,7 +14,8 @@ from django.utils.decorators import method_decorator
 @csrf_exempt
 def myo(request):
   if request.method == 'POST':
-    loaded_model = pickle.load(open('model.sav', 'rb'))
+    with open('model.sav', 'rb') as handle:
+        loaded_model = pickle.load(handle)
     test_data = request.POST.get('test')
     test_data = test_data.split(',')
     test_data = np.array(test_data)

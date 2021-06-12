@@ -33,5 +33,5 @@ def auth(request):
         log.status = "Success"
         log.save()
         jwt = JWTAuth()
-        user['token'] = jwt.encode({"id": user['id'], "exp": datetime.utcnow() + timedelta(seconds=3600)})
+        user['token'] = jwt.encode({"id": user['id']})
         return Response.ok(values=user, message="Berhasil masuk!")
