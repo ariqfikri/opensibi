@@ -16,7 +16,7 @@ def myo(request):
   if request.method == 'POST':
     loaded_model = pickle.load(open('model.sav', 'rb'))
     test_data = request.POST.get('test')
-    test_data = test_data.split(';')
+    test_data = test_data.split(',')
     test_data = np.array(test_data)
     test_data = minmax(test_data)
     predict = loaded_model.predict(test_data)
