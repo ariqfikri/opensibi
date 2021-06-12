@@ -20,7 +20,7 @@ pylint==2.6.0
 pylint-django==2.3.0
 pylint-plugin-utils==0.6
 pytz==2020.1
-scikit-learn==0.20.2
+scikit-learn==0.24.2
 scipy==1.5.2
 six==1.15.0
 sqlparse==0.4.1
