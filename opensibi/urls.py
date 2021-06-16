@@ -19,6 +19,7 @@ from user.views import *
 from monitor.views import *
 from myo.views import myo
 from leap.views import leap
+from voice.views import voice
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -30,6 +31,7 @@ urlpatterns = [
     path('monitor/', monitor),
     path('myo', myo),
     path('leap', leap),
+    path('voice', voice),
     path('auth', auth),
     path('admin/', admin.site.urls),    
 ]
