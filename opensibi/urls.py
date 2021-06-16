@@ -15,9 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from user.views import *
+from monitor.views import *
 from myo.views import myo
+from leap.views import leap
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register('user', UserViewset)
+
 
 urlpatterns = [
-    path('myo/', myo),
+    path('api/', include(router.urls)),
+    path('monitor/', monitor),
+    path('myo', myo),
+    path('leap', leap),
+    path('auth', auth),
     path('admin/', admin.site.urls),    
 ]

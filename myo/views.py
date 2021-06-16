@@ -1,36 +1,25 @@
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.http import HttpRequest
-from rest_framework.decorators import api_view
 from sklearn.neighbors import KNeighborsClassifier
-from rest_framework.response import Response
-from rest_framework import serializers
 from django.db import connection
 import numpy as np
+import pickle
+from opensibi.response import Response
+from opensibi.middleware import jwtRequired
+from monitor.models import Log
+from opensibi.normalization import minmax
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 
-class MyoSerializer(serializers.Serializer):
-    hasil = serializers.CharField(max_length=200)
-    
-
-class Myo(object):
-    def __init__(self, hasil):
-        self.hasil = hasil
-        
-
-@api_view()
+@csrf_exempt
 def myo(request):
-  with connection.cursor() as cursor:
-    cursor.execute("SELECT * FROM newlabel")
-    train_label = cursor.fetchall()
-    cursor.execute("SELECT * FROM newdata")
-    train_data = cursor.fetchall()
-
-  knn = KNeighborsClassifier(n_neighbors = 3, weights = 'distance')
-  knn.fit(train_data,train_label)
-  predict = knn.predict(train_data)
-  kirim = Myo(hasil = predict)
-  serializer = MyoSerializer(kirim)
-  return Response(serializer.data)
-# Create your views here.
+  if request.method == 'POST':
+    with open('model.sav', 'rb') as handle:
+        loaded_model = pickle.load(handle)
+    test_data = request.POST.get('test')
+    test_data = test_data.split(',')
+    test_data = np.array(test_data)
+    test_data = minmax(test_data)
+    predict = loaded_model.predict(test_data)
+    predict = predict.tolist()
+  return Response.ok(predict, message="Success")
