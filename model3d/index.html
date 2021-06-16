@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="origin-trial" data-feature="WebXR Device API (For Chrome
+      M69+)" data-expires="2019-01-07"
+      content="ArPzyYNrUDiXsGOh647Ya7MtVUA1nM+WFMnPWu7eoF2nQHOP6mTATIbiv0w+k2kFaPofZG/04ZEQdsACq4IA0wQAAABTeyJvcmlnaW4iOiJodHRwczovL3RocmVlanMub3JnOjQ0MyIsImZlYXR1cmUiOiJXZWJYUkRldmljZU02OSIsImV4cGlyeSI6MTU0Njg4MzAxOH0=">
+    <meta name="author" content="Script Tutorials" />
+    <title></title>
+
+  </head>
+  <body>
+    <div class="satu"></div>
+    <script src="./js/three.min.71.js"></script>
+    <script src="./js/THREEx.WindowResize.js"></script>
+    <script src="./js/OrbitControls.js"></script>
+    <script src="./js/stats.min.js"></script>
+    <script src="./js/ColladaLoader.js"></script>
+    <script>
+		var lesson11 = {
+		  scene: null, camera: null, renderer: null,
+		  container: null, controls: null,
+		  clock: null, stats: null,
+
+		  init: function() {
+
+			// Create main scene
+			this.scene = new THREE.Scene();
+			this.scene.fog = new THREE.FogExp2(0xFFFFFF, 0.0003);
+			var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+
+			// Prepare perspective camera
+			var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 1000;
+			this.camera = new THREE.PerspectiveCamera(20, ASPECT, NEAR, FAR);
+			this.scene.add(this.camera);
+			this.camera.position.set(10, 0, 150);
+			this.camera.lookAt(new THREE.Vector3(0,0,10));
+
+			// Prepare webgl renderer
+			this.renderer = new THREE.WebGLRenderer({ antialias:true });
+			this.renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+			this.renderer.setClearColor(this.scene.fog.color);
+
+			// Prepare container
+			this.container = document.createElement('div');
+			document.body.appendChild(this.container);
+			this.container.appendChild(this.renderer.domElement);
+
+			// Events
+			THREEx.WindowResize(this.renderer, this.camera);
+
+			// Prepare Orbit controls
+			this.controls = new THREE.OrbitControls(this.camera);
+			this.controls.target = new THREE.Vector3(0, 0, 0);
+			this.controls.maxDistance = 150;
+			
+			// Prepare clock
+			this.clock = new THREE.Clock();
+
+			// Prepare stats
+			this.stats = new Stats();
+			this.stats.domElement.style.position = 'absolute';
+			this.stats.domElement.style.left = '50px';
+			this.stats.domElement.style.bottom = '50px';
+			this.stats.domElement.style.zIndex = 1;
+			//this.container.appendChild( this.stats.domElement );
+			// Add lights
+			this.scene.add( new THREE.AmbientLight(0xFFFFFF));
+			// Load Dae model
+			 this.loadDaeModel();
+		  },
+		  loadDaeModel: function() {
+
+			// Prepare ColladaLoader
+			var daeLoader = new THREE.ColladaLoader();
+			daeLoader.options.convertUpAxis = true;
+			daeLoader.load('https://demo.te-pos.com/assets/file/angka/1.dae', function(collada) {
+			  var modelMesh = collada.scene;
+			  // Prepare and play animation
+			  modelMesh.traverse( function (child) {
+				if (child instanceof THREE.SkinnedMesh) {
+					var animation = new THREE.Animation(child, child.geometry.animation);
+						animation.timeScale = 1/20 ;
+				   		animation.play();
+					}
+			  } );
+
+			  // Set position and scale
+			  var scale = 10;
+			  modelMesh.position.set(0, -40, 0);
+			  modelMesh.scale.set(scale, scale, scale);
+			
+			  // Add the mesh into scene
+			  lesson11.scene.add(modelMesh);
+			});
+
+		  }
+		};
+
+		// Animate the scene
+		function animate() {
+		 requestAnimationFrame(animate);
+		  render();
+		  update();
+		}
+
+		// Update controls and stats
+		function update() {
+		  var delta = lesson11.clock.getDelta();
+		  lesson11.controls.update(delta);
+		  lesson11.stats.update();
+		  THREE.AnimationHandler.update(delta);
+		}
+
+		// Render the scene
+		function render() {
+		  if (lesson11.renderer) {
+			lesson11.renderer.render(lesson11.scene, lesson11.camera);
+		  }
+		}
+
+		// Initialize lesson on page load
+		function initializeLesson() {
+		  lesson11.init();
+		  animate();
+		}
+		if (window.addEventListener)
+		  window.addEventListener('load', initializeLesson, false);
+		else if (window.attachEvent)
+		  window.attachEvent('onload', initializeLesson);
+		else window.onload = initializeLesson;
+
+	</script>
+  </body>
+</html>
