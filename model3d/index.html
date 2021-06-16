@@ -7,16 +7,26 @@
       content="ArPzyYNrUDiXsGOh647Ya7MtVUA1nM+WFMnPWu7eoF2nQHOP6mTATIbiv0w+k2kFaPofZG/04ZEQdsACq4IA0wQAAABTeyJvcmlnaW4iOiJodHRwczovL3RocmVlanMub3JnOjQ0MyIsImZlYXR1cmUiOiJXZWJYUkRldmljZU02OSIsImV4cGlyeSI6MTU0Njg4MzAxOH0=">
     <meta name="author" content="Script Tutorials" />
     <title></title>
-
+	{% load static %}
+	<script src="{% static 'js/three.min.71.js' %}"></script>
+    <script src="{% static 'js/THREEx.WindowResize.js' %}"></script>
+    <script src="{% static 'js/OrbitControls.js' %}"></script>
+    <script src="{% static 'js/stats.min.js' %}"></script>
+    <script src="{% static 'js/ColladaLoader.js' %}"></script>
   </head>
   <body>
     <div class="satu"></div>
-    <script src="./js/three.min.71.js"></script>
+	
+    <!-- <script src="./js/three.min.71.js"></script>
     <script src="./js/THREEx.WindowResize.js"></script>
     <script src="./js/OrbitControls.js"></script>
     <script src="./js/stats.min.js"></script>
-    <script src="./js/ColladaLoader.js"></script>
+    <script src="./js/ColladaLoader.js"></script> -->
+	{% load static %}
+	{% static "" as baseUrl %}
     <script>
+		var daepath = "{{daepath}}";
+		console.log(daepath)
 		var lesson11 = {
 		  scene: null, camera: null, renderer: null,
 		  container: null, controls: null,
@@ -70,11 +80,10 @@
 			 this.loadDaeModel();
 		  },
 		  loadDaeModel: function() {
-
 			// Prepare ColladaLoader
 			var daeLoader = new THREE.ColladaLoader();
 			daeLoader.options.convertUpAxis = true;
-			daeLoader.load('https://demo.te-pos.com/assets/file/angka/1.dae', function(collada) {
+			daeLoader.load("{{ baseUrl }}{{daepath}}", function(collada) {
 			  var modelMesh = collada.scene;
 			  // Prepare and play animation
 			  modelMesh.traverse( function (child) {
