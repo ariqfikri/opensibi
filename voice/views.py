@@ -15,13 +15,17 @@ from django.template.response import TemplateResponse
 
 @csrf_exempt
 def voice(request):
-    file3d = request.GET.get('file')
-    query = "SELECT nama_file FROM voice WHERE input_kata like '%"+ file3d +"%'"
+    filename = request.GET.get('file')
+    if len(filename) > 1:
+        query = "SELECT nama_file FROM voice WHERE input_kata like '%"+ filename +"%'"
+    else:
+        query = "SELECT nama_file FROM voice WHERE input_kata = '"+ filename +"'"
     with connection.cursor() as cursor:
         cursor.execute(query)
         # return Response.ok(BASE_DIR, message="Success")
-        # return Response.ok(cursor.fetchone(), message="Success")
-        t = TemplateResponse(request, 'index.html', {})
+        # return Response.ok(cursor.fetchone()[0], message="Success")
+        
+        path = 'file/'+cursor.fetchone()[0]
+        # return path
+        t = TemplateResponse(request, 'index.html', {'daepath': path})
         return HttpResponse(t.render())
-        template = loader.get_template("")
-        return HttpResponse(template.render)
