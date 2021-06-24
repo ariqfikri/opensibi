@@ -15,7 +15,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 def leap(request):
     new_model =  load_model('alphasibi-14.6.h5')
     data = request.POST.get('test').split(',')
-    get = int(request.POST.get('get'))
+    get = request.POST.get('get')
 
     data = np.array(data).astype(float)
     data = np.expand_dims(data, axis=0)
@@ -36,11 +36,9 @@ def sort(data, get=None):
   sortedData = (sorted(data.items(), key=lambda x:x[1], reverse=True))
   sortedData = [list(elem) for elem in sortedData]
   sortedData = [x for x in sortedData if x[1] > 0]
-  if get==0:
-    sortedData = sortedData[0][0]
-    return sortedData
   if get!=None:
-    sortedData = sortedData[:get]
-
-
+    if int(get)==0:
+      sortedData = sortedData[0][0]
+    else:
+      sortedData = sortedData[:int(get)]
   return sortedData
