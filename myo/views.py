@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 
-
+@jwtRequired
 @csrf_exempt
 def myo(request):
   if request.method == 'POST':

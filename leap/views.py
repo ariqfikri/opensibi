@@ -11,6 +11,7 @@ import numpy as np
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
+@jwtRequired
 @csrf_exempt
 def leap(request):
     new_model =  load_model('alphasibi-14.6.h5')

@@ -22,3 +22,5 @@ def jwtRequired(fn):
 def decode(token):
     token = str(token).split(' ')
     return JWTAuth().decode(token[1])
+
+

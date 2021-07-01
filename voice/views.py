@@ -13,6 +13,7 @@ from django.http import HttpResponse
 from django.template import Context, loader
 from django.template.response import TemplateResponse
 
+@jwtRequired
 @csrf_exempt
 def voice(request):
     filename = request.GET.get('file')

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'user',
     'rest_framework',
     'monitor',
+    'project',
     'corsheaders',
 ]
 
