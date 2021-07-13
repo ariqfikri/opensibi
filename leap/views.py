@@ -17,13 +17,19 @@ def leap(request):
   data = request.POST.get('test').split(',')
   get = request.POST.get('get')
   knn = request.POST.get('knn')
+  number = request.POST.get('number')
 
   data = np.array(data).astype(float)
   
   if len(data)==num_features :
     if knn:
-      result = predictKnn(data, get)
+      result = 'knn'
+      # result = predictKnn(data, get)
+    elif number:
+      # result = 'number'
+      result = predictNumber(data, get)
     else:
+      result = 'abjad'
       result = predictOne(data, get)
   else:
     result = predictMany(data, get)
@@ -39,23 +45,37 @@ def predictMany(data, get):
   return manyData
 
 def predictOne(data, get):
-  model =  load_model('alphasibi-14.6.h5')
+  model =  load_model('model/alphasibi-14.6.h5')
   data = np.expand_dims(data, axis=0)
   result = model.predict(data)
   result = getLabel(result[0])
+  result = sort(result, get)
+  return result
+
+def predictNumber(data, get):
+  model = load_model('model/alphasibi-angka.h5')
+  data = np.expand_dims(data, axis=0)
+  result = model.predict(data)
+  result = getLabel(result[0],number=True)
   result = sort(result, get)
   return result
 
 def predictKnn(data, get):
-  model = joblib.load('knn.pkl')
+  model = joblib.load('model/knn.pkl')
   data = np.expand_dims(data, axis=0)
   result = model.predict(data)
   result = getLabel(result[0])
   result = sort(result, get)
   return result
 
-def getLabel(testLabel):
-  label = ['None', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P','Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+
+def getLabel(testLabel,number=False):
+  labelAbjad = ['None', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P','Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+  labelNumber = [1,2,3,4,5,6,7,8,9]
+  labelNumber = [str(x) for x in labelNumber]
+
+  label = labelNumber if number else labelAbjad
+
   result = {}
   for index, l in enumerate(label):
     result[l] = float("{:.2f}".format(testLabel[index]))

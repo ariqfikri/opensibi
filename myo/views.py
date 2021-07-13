@@ -9,17 +9,38 @@ from opensibi.normalization import minmax
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+import joblib 
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.neighbors import KNeighborsClassifier
+import pandas as pd
 
+
+scaler = MinMaxScaler()
+df = pd.read_csv('myo.csv', header=None)
+X = df.loc[:, df.columns != 0]
+y = df[0]
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1, stratify=y)
+
+# Create KNN classifier
+knn = KNeighborsClassifier(n_neighbors = 3, weights= 'distance')
+# Fit the classifier to the data
+# X_train = scaler.fit_transform(X_train)
+# y_train = np.array(y_train)
+# y_train = y_train.ravel()
+X = scaler.fit_transform(X)
+knn.fit(X,y)
 
 @csrf_exempt
 def myo(request):
   if request.method == 'POST':
-    with open('model.sav', 'rb') as handle:
-        loaded_model = pickle.load(handle)
+    # model = joblib.load('myo.pkl')
+    # scaler = joblib.load('scaler.pkl')
+    # assert isinstance(scaler, MinMaxScaler)
     test_data = request.POST.get('test')
     test_data = test_data.split(',')
     test_data = np.array(test_data)
-    test_data = minmax(test_data)
-    predict = loaded_model.predict(test_data)
+    test_data = np.expand_dims(test_data, axis=0)
+    test_data = scaler.transform(test_data)
+    predict = knn.predict(test_data)
     predict = predict.tolist()
-  return Response.ok(predict, message="Success")
+  return Response.ok(predict[0], message="Success")
