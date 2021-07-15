@@ -1,12 +1,15 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from user.models import Users
 from user.serializers import UserSerializer
+from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
+from project.forms import *
 from opensibi.middleware import *
 from django.contrib.auth.hashers import check_password
 from opensibi.response import Response
 from user import transformer
+from project.views import index
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta
 from monitor.models import Log
@@ -16,22 +19,37 @@ class UserViewset(viewsets.ModelViewSet):
   serializer_class = UserSerializer
 
 @csrf_exempt 
+def login(request):
+    form = formUsers()
+    if request.method == 'POST':
+        m = Users.objects.filter(email=request.POST['email']).first()
+        print("if 1")
+    if not m:
+        return render(request, "login.html", {'warning': "e-mail not registered ", 'form': form})
+    if m.password == request.POST['password']:
+        print("masuk if2")
+        request.session['user_id'] = m.id
+        return redirect("/admin")
+    else:
+        return render(request, "login.html", {'warning': "password didn't match.", 'form': form})
+
+@csrf_exempt
+def logoutApi(request):
+    try:
+        del request.session['user_id']
+    except KeyError:
+        pass
+    return Response.ok(values="",meesage="Logout successfully")
+    
+@csrf_exempt 
 def auth(request):
     if request.method == 'POST':
         email = request.POST['email']
-        log = Log()
-        log.name = "Login"
-        log.method = "POST"
         user = Users.objects.filter(email=email).first()
         if not user:
-            return Response.badRequest(message='Pengguna tidak ditemukan!')
+            return Response.badRequest(message='e-mail not registered')
         if not (request.POST['password'] == user.password):
-            return Response.badRequest(message="Password atau email yang kamu masukkan salah!")
+            return Response.badRequest(message="e-mail or password didn't match")
+        request.session['user_id'] = user.id
         user = transformer.singleTransform(user)
-        if not user:
-            log.status = "Error"
-        log.status = "Success"
-        log.save()
-        jwt = JWTAuth()
-        user['token'] = jwt.encode({"id": user['id']})
-        return Response.ok(values=user, message="Berhasil masuk!")
+        return Response.ok(values=user, message="login successfully")

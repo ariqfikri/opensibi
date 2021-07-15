@@ -11,3 +11,10 @@ class Log(models.Model):
     created_at = models.DateTimeField(default=datetime.now)
     class Meta:
         db_table = 'logs'
+
+class LogView(models.Model):
+    name = models.CharField(max_length=200, null=True)
+    total = models.IntegerField(null=True)
+    tanggal = models.CharField(primary_key=True, max_length=230, null=False)
+    class Meta:
+        db_table = 'logs_view'
