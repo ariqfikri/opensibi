@@ -19,14 +19,9 @@ scaler = MinMaxScaler()
 df = pd.read_csv('myo.csv', header=None)
 X = df.loc[:, df.columns != 0]
 y = df[0]
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1, stratify=y)
 
 # Create KNN classifier
-knn = KNeighborsClassifier(n_neighbors = 3, weights= 'distance')
-# Fit the classifier to the data
-# X_train = scaler.fit_transform(X_train)
-# y_train = np.array(y_train)
-# y_train = y_train.ravel()
+knn = KNeighborsClassifier(algorithm ='auto', leaf_size= 1, metric= 'minkowski',n_neighbors= 1, p = 2, weights= 'uniform')
 X = scaler.fit_transform(X)
 knn.fit(X,y)
 
